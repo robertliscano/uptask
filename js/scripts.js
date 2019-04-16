@@ -5,6 +5,13 @@ eventListeners();
 var listaProyectos = document.querySelector('ul#proyectos');
 
 function eventListeners() {
+
+    // Document Ready
+    document.addEventListener('DOMContentLoaded', function(){
+       actualizarProgreso();
+    }); 
+
+
     // boton para crear proyecto
     document.querySelector('.crear-proyecto a').addEventListener('click', nuevoProyecto);
     
@@ -201,6 +208,9 @@ function agregarTarea(e) {
                        
                        // Limpiar el formulario
                        document.querySelector('.agregar-tarea').reset();
+
+                       //Actualiza barra progreso
+                       actualizarProgreso();
                     }
                 } else {
                     // hubo un error
@@ -282,7 +292,8 @@ function cambiarEstadoTarea(tarea, estado) {
     xhr.onload = function() {
         if(this.status === 200) {
             console.log(JSON.parse(xhr.responseText));
-            
+            //Actualiza barra progreso
+            actualizarProgreso();
 
         }
     }
@@ -315,6 +326,8 @@ function eliminarTareaBD(tarea) {
             if(listaTareasRestantes.length === 0 ) {
                 document.querySelector('.listado-pendientes ul').innerHTML = "<p class='lista-vacia'>No hay tareas en este proyecto</p>";
             }
+            //Actualiza barra progreso
+            actualizarProgreso();
         }
     }
     // enviar la petición
@@ -322,6 +335,30 @@ function eliminarTareaBD(tarea) {
 }
 
 
+//Actualiza el avance del proyecto
+function actualizarProgreso(){
+    // Obtener todas las tareas
+    const tareas = document.querySelectorAll('li.tarea');
+
+    // Obtener las tareas completadas
+    const tareasCompletadas = document.querySelectorAll('i.completo');
+
+    // Determinar el avance
+    const avance = Math.round((tareasCompletadas.length / tareas.length) * 100);
+
+    //Asignar avance a la barra
+    const porcentaje = document.querySelector('#porcentaje');
+    porcentaje.style.width = avance+'%';
+
+    //Mostrar alerta al completar 100%
+    if (avance === 100){
+        swal({
+            title: 'Proyecto Terminado',
+            text: 'Ya no tienes tareas pendientes!',
+            type: 'success'
+        })
+    }
+}
 
 
 
